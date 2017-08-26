@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<unload unload_date="2017-08-26 06:21:05">
+<sys_ui_script action="INSERT_OR_UPDATE">
+<active>true</active>
+<description>Add a custom copy encoded query button</description>
+<global>true</global>
+<name>Copy Encoded Query</name>
+<script><![CDATA[if(typeof jQuery != 'undefined')
+	{
+	jQuery(document).ready(function() {
+		try
+		{
+			var currentURL = window.location.href;
+			var start = currentURL.indexOf('.com/');
+			var end = currentURL.indexOf('_list.do');
+			if(start != -1 && end != -1)
+				{
+				var tableName = currentURL.substring(start+5,end);
+				var getBreadCrumbObject = document.getElementById(tableName+'_breadcrumb');
+				if(getBreadCrumbObject)
+					{
+					getBreadCrumbObject.addEventListener("contextmenu", function(e)
+					{
+						var getCopyQueryElement = jQuery('#context_breadcrumb_menu');
+						var createNewMenu = '<div id="custom_copy_encoded_query" item_id="copy_encoded_query" class="context_item" func_set="true">Copy encoded query</div>';
+						getCopyQueryElement.append(createNewMenu);
+						
+						jQuery("#custom_copy_encoded_query").click(function() {
+							
+							var url = document.URL.parseQuery();
+							var query = '';
+							if(url['sysparm_fixed_query'])
+								{
+								query = decodeURI(url['sysparm_fixed_query']);
+								query = query.replace('^EQ','');
+							}
+							if(url['sysparm_query']){
+								
+								if(query!='')
+									{
+									query = query + '^' + decodeURI(url['sysparm_query']);
+								}
+								else
+									{
+									query = decodeURI(url['sysparm_query']);
+								}
+							}
+							var newLine = "\n";
+							var script = newLine;
+							script = "//Change the gliderecord variable as per need"+ newLine +newLine;
+							script += "var gr = new GlideRecord('" + tableName + "');" + newLine;
+							if (query != "") {
+								script += "gr.addEncodedQuery('" + query + "');" + newLine;
+							}
+							else
+								{
+								script += "gr.addEncodedQuery('');" + newLine;
+							}
+							
+							script += "gr.query();" + newLine;
+							script += "while (gr.next()) {" + newLine;
+							script += newLine;
+							script += "}" + newLine;
+							copyToClipboard(script);
+							
+						}).hover(function(){ jQuery(this).addClass('context_menu_hover')},
+						function(){ jQuery(this).removeClass('context_menu_hover') }
+						);
+						
+					});
+				}
+				
+			}
+		}
+		catch(err)
+		{
+			jslog('Custom encoded query button failing'+err);
+		}
+	});
+}
+
+]]></script>
+<script_name/>
+<sys_class_name>sys_ui_script</sys_class_name>
+<sys_created_by>KPushpan</sys_created_by>
+<sys_created_on>2017-05-11 08:40:57</sys_created_on>
+<sys_customer_update>true</sys_customer_update>
+<sys_id>50b17713cde23600085a9214cd794b4f</sys_id>
+<sys_mod_count>21</sys_mod_count>
+<sys_name>Copy Encoded Query</sys_name>
+<sys_package display_value="Global">global</sys_package>
+<sys_policy/>
+<sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+<sys_scope display_value="Global">global</sys_scope>
+<sys_update_name>sys_ui_script_50b17713cde23600085a9214cd794b4f</sys_update_name>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2017-08-26 06:20:44</sys_updated_on>
+<use_scoped_format>false</use_scoped_format>
+</sys_ui_script>
+</unload>
